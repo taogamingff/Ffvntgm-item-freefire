@@ -2,8 +2,7 @@
   "name": "ffvntgm-item-freefire",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "dependencies": {
-    "@vercel/blob": "^2.0.0"
+    "@vercel/blob": "latest"
   }
 }
