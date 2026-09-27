@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+>
+
+<title>FFVNTGM ITEM FREE FIRE 🔥</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  color:#fff;
+  background:
+    radial-gradient(circle at top,#3b1d00 0%,#090909 40%,#020202 100%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+.container{
+  width:100%;
+  max-width:520px;
+  padding:28px;
+  border:1px solid rgba(255,140,0,.35);
+  border-radius:24px;
+  background:rgba(20,20,20,.78);
+  backdrop-filter:blur(18px);
+  box-shadow:
+    0 20px 70px rgba(0,0,0,.65),
+    0 0 35px rgba(255,120,0,.12);
+}
+
+.logo{
+  width:85px;
+  height:85px;
+  object-fit:cover;
+  border-radius:22px;
+  display:block;
+  margin:0 auto 15px;
+  box-shadow:0 0 30px rgba(255,120,0,.35);
+}
+
+h1{
+  text-align:center;
+  font-size:25px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  text-align:center;
+  color:#aaa;
+  font-size:14px;
+  margin-bottom:25px;
+}
+
+.input-box{
+  display:flex;
+  gap:10px;
+}
+
+input{
+  flex:1;
+  min-width:0;
+  height:52px;
+  padding:0 16px;
+  border-radius:14px;
+  border:1px solid #444;
+  outline:none;
+  background:#111;
+  color:#fff;
+  font-size:16px;
+}
+
+input:focus{
+  border-color:#ff8500;
+  box-shadow:0 0 15px rgba(255,133,0,.2);
+}
+
+button{
+  height:52px;
+  padding:0 18px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ffb000,#ff5e00);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  font-size:14px;
+}
+
+button:active{
+  transform:scale(.97);
+}
+
+.result{
+  display:none;
+  margin-top:25px;
+  padding:18px;
+  border-radius:18px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.item-image{
+  width:220px;
+  height:220px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 18px;
+  border-radius:18px;
+  background:#080808;
+}
+
+.info{
+  line-height:1.8;
+  font-size:14px;
+  word-break:break-all;
+}
+
+.label{
+  color:#999;
+}
+
+.value{
+  color:#ffae32;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
+}
+
+.actions button{
+  flex:1;
+}
+
+.secondary{
+  background:#222;
+  border:1px solid #444;
+}
+
+.error{
+  display:none;
+  margin-top:18px;
+  padding:14px;
+  border-radius:13px;
+  background:rgba(255,40,40,.1);
+  border:1px solid rgba(255,60,60,.3);
+  color:#ff8b8b;
+  font-size:14px;
+}
+
+.api-link{
+  margin-top:20px;
+  text-align:center;
+  color:#777;
+  font-size:12px;
+  word-break:break-all;
+}
+
+@media(max-width:480px){
+  .container{
+    padding:20px;
+  }
+
+  .input-box{
+    flex-direction:column;
+  }
+
+  button{
+    width:100%;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <img
+    class="logo"
+    src="https://cdn.imagetourls.com/uploads/tyImg/1ggIdgxtr.jpg"
+    alt="FFVNTGM"
+  >
+
+  <h1>FREE FIRE ITEM 🔥</h1>
+
+  <div class="subtitle">
+    NHẬN DẠNG ID VẬT PHẨM
+  </div>
+
+  <div class="input-box">
+
+    <input
+      id="itemId"
+      type="text"
+      inputmode="numeric"
+      maxlength="9"
+      placeholder="Nhập ID 9 chữ số..."
+      autocomplete="off"
+    >
+
+    <button onclick="detectItem()">
+      🔍 NHẬN DẠNG
+    </button>
+
+  </div>
+
+  <div id="error" class="error"></div>
+
+  <div id="result" class="result">
+
+    <img
+      id="itemImage"
+      class="item-image"
+      alt="Free Fire Item"
+    >
+
+    <div class="info">
+
+      <div>
+        <span class="label">ID vật phẩm:</span>
+        <span id="showId" class="value"></span>
+      </div>
+
+      <div>
+        <span class="label">Trạng thái:</span>
+        <span id="status" class="value"></span>
+      </div>
+
+      <div>
+        <span class="label">URL ảnh:</span>
+        <span id="showUrl" class="value"></span>
+      </div>
+
+    </div>
+
+    <div class="actions">
+
+      <button onclick="copyImageUrl()">
+        📋 SAO CHÉP URL
+      </button>
+
+      <button
+        class="secondary"
+        onclick="openImage()"
+      >
+        🖼️ MỞ ẢNH
+      </button>
+
+    </div>
+
+  </div>
+
+  <div id="apiLink" class="api-link"></div>
+
+</div>
+
+<script>
+
+let currentImageUrl = "";
+
+const input = document.getElementById("itemId");
+
+input.addEventListener("input", () => {
+
+  input.value = input.value
+    .replace(/\D/g, "")
+    .slice(0, 9);
+
+});
+
+input.addEventListener("keydown", e => {
+
+  if(e.key === "Enter"){
+    detectItem();
+  }
+
+});
+
+async function detectItem(){
+
+  const id = input.value.trim();
+
+  hideError();
+
+  document.getElementById("result").style.display = "none";
+
+  if(!/^\d{9}$/.test(id)){
+
+    showError(
+      "❌ ID vật phẩm phải gồm đúng 9 chữ số."
+    );
+
+    return;
+  }
+
+  try{
+
+    const response = await fetch(
+      `/api/item?id=${encodeURIComponent(id)}`
+    );
+
+    const data = await response.json();
+
+    if(!response.ok || !data.success){
+
+      showError(
+        data.message ||
+        "Không thể nhận dạng ID vật phẩm."
+      );
+
+      return;
+    }
+
+    currentImageUrl = data.image.url;
+
+    document.getElementById("itemImage").src =
+      currentImageUrl;
+
+    document.getElementById("showId").textContent =
+      data.item.id;
+
+    document.getElementById("showUrl").textContent =
+      currentImageUrl;
+
+    document.getElementById("status").textContent =
+      data.image.available
+        ? "Đã tìm thấy ảnh"
+        : "Chưa xác minh được ảnh";
+
+    document.getElementById("apiLink").textContent =
+      `${location.origin}/api/item?id=${id}`;
+
+    document.getElementById("result").style.display =
+      "block";
+
+    history.replaceState(
+      null,
+      "",
+      `/id=${id}`
+    );
+
+  }catch(error){
+
+    showError(
+      "❌ Không thể kết nối API."
+    );
+
+  }
+
+}
+
+function showError(message){
+
+  const error =
+    document.getElementById("error");
+
+  error.textContent = message;
+  error.style.display = "block";
+
+}
+
+function hideError(){
+
+  document.getElementById("error")
+    .style.display = "none";
+
+}
+
+function copyImageUrl(){
+
+  if(!currentImageUrl) return;
+
+  navigator.clipboard.writeText(
+    currentImageUrl
+  ).then(() => {
+
+    alert("✅ Đã sao chép URL ảnh!");
+
+  });
+
+}
+
+function openImage(){
+
+  if(!currentImageUrl) return;
+
+  window.open(
+    currentImageUrl,
+    "_blank"
+  );
+
+}
+
+// ======================================
+// TỰ ĐỘNG NHẬN ID TỪ /id=123456789
+// ======================================
+
+const path = location.pathname;
+
+if(path.startsWith("/id=")){
+
+  const idFromUrl =
+    path.substring(4)
+      .replace(/\D/g, "")
+      .slice(0,9);
+
+  if(idFromUrl.length === 9){
+
+    input.value = idFromUrl;
+
+    setTimeout(() => {
+      detectItem();
+    }, 100);
+
+  }
+
+}
+
+</script>
+
+</body>
+          </html>
