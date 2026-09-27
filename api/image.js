@@ -1,75 +1,173 @@
+import { get, put } from "@vercel/blob";
+
+const SOURCE_URL =
+  "https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG";
+
 export default async function handler(req, res) {
   try {
     const { id } = req.query;
 
-    // Chỉ chấp nhận ID 9 chữ số
+    // =========================
+    // KIỂM TRA ID
+    // =========================
+
     if (!id || !/^\d{9}$/.test(id)) {
       return res.status(400).json({
         success: false,
         error: "ID phải gồm đúng 9 chữ số",
-        example: "/images/902052005.png"
+        example:
+          "/images/902052005.png"
       });
     }
 
-    /*
-     * Nguồn dữ liệu Free Fire Items Library.
-     * API cố gắng lấy ảnh theo ID từ thư viện.
-     */
-    const sources = [
-      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
-      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
-      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
-      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`
-    ];
+    const pathname = `images/${id}.png`;
 
-    for (const source of sources) {
-      try {
-        const response = await fetch(source, {
-          headers: {
-            "User-Agent": "FFVNTGM-Item-API/1.0"
-          }
-        });
+    // =========================
+    // 1. KIỂM TRA ẢNH ĐÃ LƯU
+    // =========================
 
-        if (!response.ok) continue;
+    try {
+      const saved = await get(pathname, {
+        access: "public"
+      });
 
-        const contentType =
-          response.headers.get("content-type") || "";
-
-        if (!contentType.startsWith("image/")) continue;
-
-        const buffer = Buffer.from(await response.arrayBuffer());
-
-        if (!buffer.length) continue;
+      if (
+        saved &&
+        saved.statusCode === 200 &&
+        saved.stream
+      ) {
+        res.statusCode = 200;
 
         res.setHeader(
           "Content-Type",
-          contentType.includes("webp")
-            ? "image/webp"
-            : contentType.includes("jpeg")
-              ? "image/jpeg"
-              : "image/png"
+          saved.blob.contentType || "image/png"
         );
 
         res.setHeader(
           "Cache-Control",
-          "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+          "public, max-age=31536000, immutable"
         );
 
-        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader(
+          "X-FFVNTGM-Storage",
+          "BLOB"
+        );
 
-        return res.status(200).send(buffer);
-      } catch {
-        // thử nguồn tiếp theo
+        for await (const chunk of saved.stream) {
+          res.write(Buffer.from(chunk));
+        }
+
+        return res.end();
       }
+    } catch (error) {
+      // Chưa có ảnh → tải từ nguồn
     }
 
-    return res.status(404).json({
-      success: false,
-      error: "Không tìm thấy ảnh của Item ID",
-      id
-    });
+    // =========================
+    // 2. TẢI ẢNH NGUỒN
+    // =========================
+
+    const sourceUrl =
+      `${SOURCE_URL}/${id}.png`;
+
+    const response = await fetch(
+      sourceUrl,
+      {
+        headers: {
+          "User-Agent":
+            "FFVNTGM-Item-API/1.0"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      return res.status(404).json({
+        success: false,
+        error: "Không tìm thấy ảnh vật phẩm",
+        id
+      });
+    }
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "image/png";
+
+    if (!contentType.startsWith("image/")) {
+      return res.status(404).json({
+        success: false,
+        error: "Nguồn không trả về hình ảnh",
+        id
+      });
+    }
+
+    const buffer = Buffer.from(
+      await response.arrayBuffer()
+    );
+
+    if (!buffer.length) {
+      return res.status(404).json({
+        success: false,
+        error: "Ảnh rỗng",
+        id
+      });
+    }
+
+    // =========================
+    // 3. TỰ ĐỘNG LƯU VÀO BLOB
+    // =========================
+
+    await put(
+      pathname,
+      buffer,
+      {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: true,
+        contentType: "image/png",
+        cacheControlMaxAge: 31536000
+      }
+    );
+
+    // =========================
+    // 4. TRẢ ẢNH NGAY
+    // =========================
+
+    res.statusCode = 200;
+
+    res.setHeader(
+      "Content-Type",
+      "image/png"
+    );
+
+    res.setHeader(
+      "Content-Length",
+      buffer.length
+    );
+
+    res.setHeader(
+      "Cache-Control",
+      "public, max-age=31536000, immutable"
+    );
+
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "*"
+    );
+
+    res.setHeader(
+      "X-FFVNTGM-Storage",
+      "BLOB-SAVED"
+    );
+
+    return res.send(buffer);
 
   } catch (error) {
+    console.error(
+      "FFVNTGM IMAGE API ERROR:",
+      error
+    );
+
     return res.status(500).json({
       success: false,
       error: "Lỗi máy chủ",
