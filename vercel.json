@@ -4,6 +4,10 @@
     {
       "source": "/id=:id",
       "destination": "/api/item?id=:id"
+    },
+    {
+      "source": "/images/:id",
+      "destination": "/api/image?id=:id"
     }
   ]
 }
