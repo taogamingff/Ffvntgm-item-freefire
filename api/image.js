@@ -1,73 +1,84 @@
 import { list } from "@vercel/blob";
 
-function getId(value) {
-  if (!value) return "";
-
-  return String(value)
-    .replace(/\D/g, "");
-}
-
 export default async function handler(req, res) {
   try {
-    const id = getId(req.query?.id);
+    const id = String(req.query?.id || "").trim();
+    const ext = String(req.query?.ext || "png").toLowerCase();
 
     if (!/^\d{9}$/.test(id)) {
       return res.status(400).json({
         success: false,
-        message: "ID phải gồm đúng 9 chữ số."
+        error: "ID phải gồm đúng 9 chữ số"
+      });
+    }
+
+    const allowed = ["png", "jpg", "jpeg", "webp"];
+
+    if (!allowed.includes(ext)) {
+      return res.status(400).json({
+        success: false,
+        error: "Định dạng ảnh không được hỗ trợ"
       });
     }
 
     const result = await list({
       prefix: `items/${id}.`,
-      limit: 10
+      limit: 20
     });
 
-    if (!result.blobs.length) {
+    const file = result.blobs?.find(blob => {
+      const name = blob.pathname.toLowerCase();
+      return (
+        name === `items/${id}.${ext}` ||
+        name === `items/${id}.png` ||
+        name === `items/${id}.jpg` ||
+        name === `items/${id}.jpeg` ||
+        name === `items/${id}.webp`
+      );
+    });
+
+    if (!file) {
       return res.status(404).json({
         success: false,
-        message: "Không tìm thấy hình ảnh vật phẩm."
+        error: "Không tìm thấy ảnh vật phẩm",
+        id,
+        image: null
       });
     }
 
-    const blob = result.blobs[0];
-
-    const response = await fetch(blob.url);
+    const response = await fetch(file.url);
 
     if (!response.ok) {
-      return res.status(404).json({
+      return res.status(502).json({
         success: false,
-        message: "Không thể tải hình ảnh."
+        error: "Không thể tải ảnh từ Blob"
       });
     }
 
+    const buffer = Buffer.from(await response.arrayBuffer());
+
     const contentType =
-      response.headers.get("content-type") ||
-      "image/png";
+      file.pathname.endsWith(".png")
+        ? "image/png"
+        : file.pathname.endsWith(".webp")
+        ? "image/webp"
+        : "image/jpeg";
 
-    const arrayBuffer =
-      await response.arrayBuffer();
-
-    res.setHeader(
-      "Content-Type",
-      contentType
-    );
-
+    res.setHeader("Content-Type", contentType);
     res.setHeader(
       "Cache-Control",
       "public, max-age=31536000, immutable"
     );
 
-    return res.status(200).send(
-      Buffer.from(arrayBuffer)
-    );
+    return res.status(200).send(buffer);
 
   } catch (error) {
     console.error(error);
 
     return res.status(500).json({
       success: false,
-      message: "Lỗi máy chủ."
+      error: "Lỗi máy chủ",
+      message: error?.message || "Unknown error"
     });
   }
 }
