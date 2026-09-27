@@ -1,23 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/id=:id",
-      "destination": "/api/item?id=:id"
-    },
-    {
       "source": "/images/:id.:ext",
       "destination": "/api/image?id=:id&ext=:ext"
-    }
-  ],
-  "headers": [
+    },
     {
-      "source": "/images/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
+      "source": "/images/:id",
+      "destination": "/api/image?id=:id"
     }
   ]
 }
