@@ -101,4 +101,4 @@ function getBaseUrl(req) {
     "https";
 
   return `${protocol}://${host}`;
-      }
+}
