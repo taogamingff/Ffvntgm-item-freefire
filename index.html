@@ -1,601 +1,325 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1"
->
-
-<title>
-FFVNTGM ITEM FREE FIRE 🔥
-</title>
+<title>FREE FIRE ITEM ID 🔥</title>
 
 <style>
-
 *{
   box-sizing:border-box;
+  margin:0;
+  padding:0;
 }
 
 body{
-  margin:0;
   min-height:100vh;
-  padding:20px;
+  background:
+    radial-gradient(circle at top,#3a1600,#090909 45%,#000);
+  color:#fff;
+  font-family:Arial,sans-serif;
   display:flex;
   align-items:center;
   justify-content:center;
-
-  font-family:Arial,sans-serif;
-  color:#fff;
-
-  background:
-    radial-gradient(
-      circle at top,
-      #472300,
-      #0b0b0b 42%,
-      #020202
-    );
+  padding:20px;
 }
 
 .container{
   width:100%;
-  max-width:550px;
-
-  padding:28px;
-
+  max-width:520px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,120,0,.3);
+  backdrop-filter:blur(20px);
   border-radius:25px;
-
-  background:
-    rgba(20,20,20,.82);
-
-  border:
-    1px solid
-    rgba(255,130,0,.3);
-
-  backdrop-filter:
-    blur(20px);
-
-  box-shadow:
-    0 25px 80px #000,
-    0 0 35px
-    rgba(255,110,0,.1);
+  padding:25px;
+  box-shadow:0 0 40px rgba(255,90,0,.15);
 }
 
 .logo{
   width:85px;
   height:85px;
-
+  object-fit:cover;
+  border-radius:20px;
   display:block;
   margin:0 auto 15px;
-
-  object-fit:cover;
-
-  border-radius:22px;
-
-  box-shadow:
-    0 0 35px
-    rgba(255,130,0,.3);
+  border:2px solid #ff7a00;
 }
 
 h1{
   text-align:center;
   font-size:25px;
+  margin-bottom:8px;
 }
 
-.subtitle{
+.sub{
   text-align:center;
-  color:#999;
+  color:#aaa;
+  font-size:14px;
   margin-bottom:25px;
 }
 
-.search{
-  display:flex;
-  gap:10px;
-}
-
 input{
-  flex:1;
-  min-width:0;
-
-  height:53px;
-
-  padding:0 16px;
-
-  border-radius:14px;
-
-  border:1px solid #444;
-
+  width:100%;
+  height:55px;
+  border:none;
   outline:none;
-
-  background:#0d0d0d;
-
-  color:#fff;
-
-  font-size:16px;
+  border-radius:15px;
+  padding:0 18px;
+  font-size:17px;
+  background:#111;
+  color:white;
+  border:1px solid #333;
+  margin-bottom:12px;
 }
 
 input:focus{
-  border-color:#ff8500;
+  border-color:#ff7200;
+  box-shadow:0 0 15px rgba(255,114,0,.2);
 }
 
 button{
-  height:53px;
-
-  padding:0 18px;
-
-  border:0;
-
-  border-radius:14px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #ffb000,
-      #ff5800
-    );
-
-  color:#fff;
-
+  width:100%;
+  height:55px;
+  border:none;
+  border-radius:15px;
+  background:linear-gradient(135deg,#ff9a00,#ff4500);
+  color:white;
+  font-size:16px;
   font-weight:bold;
-
   cursor:pointer;
 }
 
+button:active{
+  transform:scale(.98);
+}
+
 .result{
+  margin-top:22px;
   display:none;
-
-  margin-top:25px;
-
-  padding:20px;
-
-  border-radius:18px;
-
-  background:#0c0c0c;
-
-  border:1px solid #292929;
 }
 
-.item-image{
-  width:250px;
-  height:250px;
-
-  display:block;
-
-  margin:0 auto 20px;
-
+.preview{
+  width:100%;
+  max-height:430px;
   object-fit:contain;
-
   border-radius:18px;
-
-  background:#050505;
+  background:#080808;
+  border:1px solid #333;
+  padding:10px;
 }
 
-.row{
-  padding:8px 0;
-
-  font-size:14px;
-
-  word-break:break-word;
+.idbox{
+  margin-top:12px;
+  background:#111;
+  border-radius:12px;
+  padding:13px;
+  text-align:center;
+  color:#bbb;
 }
 
-.label{
-  color:#888;
+.link{
+  display:block;
+  margin-top:10px;
+  color:#ff8a00;
+  word-break:break-all;
+  font-size:13px;
+  text-decoration:none;
 }
 
-.value{
-  color:#ffae32;
-}
-
-.buttons{
-  display:flex;
-  gap:10px;
+.status{
+  text-align:center;
   margin-top:15px;
-}
-
-.buttons button{
-  flex:1;
-}
-
-.secondary{
-  background:#222;
-  border:1px solid #444;
+  color:#aaa;
+  font-size:14px;
 }
 
 .error{
-  display:none;
-
-  margin-top:15px;
-
-  padding:13px;
-
-  border-radius:12px;
-
-  background:#260b0b;
-
-  color:#ff8b8b;
+  color:#ff5555;
 }
 
-.loading{
-  display:none;
-
-  text-align:center;
-
-  margin-top:20px;
-
-  color:#ff9d22;
+.success{
+  color:#57ff8a;
 }
-
-.admin{
-  display:block;
-
-  margin-top:22px;
-
-  text-align:center;
-
-  color:#666;
-
-  text-decoration:none;
-
-  font-size:12px;
-}
-
-@media(max-width:500px){
-
-  .container{
-    padding:20px;
-  }
-
-  .search{
-    flex-direction:column;
-  }
-
-  button{
-    width:100%;
-  }
-
-  .buttons{
-    flex-direction:column;
-  }
-
-}
-
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<img
-  class="logo"
-  src="https://cdn.imagetourls.com/uploads/tyImg/1ggIdgxtr.jpg"
-  alt="FFVNTGM"
->
+  <img
+    class="logo"
+    src="https://cdn.imagetourls.com/uploads/tyImg/1ggIdgxtr.jpg"
+    alt="FFVNTGM"
+  >
 
-<h1>
-FREE FIRE ITEM 🔥
-</h1>
+  <h1>FREE FIRE ITEM ID 🔥</h1>
 
-<div class="subtitle">
-NHẬN DẠNG ID VẬT PHẨM
-</div>
+  <div class="sub">
+    Nhập ID vật phẩm Free Fire để xem ảnh
+  </div>
 
-<div class="search">
+  <input
+    id="itemId"
+    type="text"
+    inputmode="numeric"
+    maxlength="9"
+    placeholder="Nhập ID 9 số..."
+  >
 
-<input
-  id="id"
-  type="text"
-  inputmode="numeric"
-  maxlength="9"
-  placeholder="Nhập ID 9 chữ số..."
->
+  <button onclick="findItem()">
+    🔎 HIỆN ẢNH VẬT PHẨM
+  </button>
 
-<button onclick="searchItem()">
-🔍 NHẬN DẠNG
-</button>
+  <div id="status" class="status"></div>
 
-</div>
+  <div id="result" class="result">
 
-<div id="loading" class="loading">
-⏳ ĐANG NHẬN DẠNG...
-</div>
+    <img
+      id="preview"
+      class="preview"
+      alt="Free Fire Item"
+    >
 
-<div id="error" class="error"></div>
+    <div id="idbox" class="idbox"></div>
 
-<div id="result" class="result">
+    <a
+      id="imageLink"
+      class="link"
+      target="_blank"
+    ></a>
 
-<img
-  id="image"
-  class="item-image"
-  alt="Free Fire Item"
->
-
-<div class="row">
-<span class="label">
-ID:
-</span>
-
-<span
-  id="itemId"
-  class="value"
-></span>
-</div>
-
-<div class="row">
-<span class="label">
-Tên:
-</span>
-
-<span
-  id="itemName"
-  class="value"
-></span>
-</div>
-
-<div class="row">
-<span class="label">
-Loại:
-</span>
-
-<span
-  id="itemType"
-  class="value"
-></span>
-</div>
-
-<div class="row">
-<span class="label">
-URL ảnh:
-</span>
-
-<span
-  id="imageUrl"
-  class="value"
-></span>
-</div>
-
-<div class="buttons">
-
-<button onclick="copyImage()">
-📋 SAO CHÉP URL ẢNH
-</button>
-
-<button
-  class="secondary"
-  onclick="openImage()"
->
-🖼️ MỞ ẢNH
-</button>
-
-</div>
-
-</div>
-
-<a
-  class="admin"
-  href="/api/admin"
->
-ADMIN
-</a>
+  </div>
 
 </div>
 
 <script>
 
-let currentImage = "";
+const BASE_URL =
+  "https://ffvntgm-item-freefire.vercel.app";
 
-const input =
-  document.getElementById("id");
+function findItem(){
 
-input.addEventListener(
-  "input",
-  () => {
-
-    input.value =
-      input.value
-        .replace(/\D/g,"")
-        .slice(0,9);
-
-  }
-);
-
-input.addEventListener(
-  "keydown",
-  event => {
-
-    if(event.key === "Enter"){
-      searchItem();
-    }
-
-  }
-);
-
-function showError(message){
-
-  const error =
-    document.getElementById("error");
-
-  error.textContent =
-    message;
-
-  error.style.display =
-    "block";
-}
-
-function hideError(){
-
-  document
-    .getElementById("error")
-    .style.display =
-      "none";
-}
-
-async function searchItem(){
-
-  hideError();
-
-  document
-    .getElementById("result")
-    .style.display =
-      "none";
+  const input =
+    document.getElementById("itemId");
 
   const id =
     input.value.trim();
 
+  const status =
+    document.getElementById("status");
+
+  const result =
+    document.getElementById("result");
+
+  const preview =
+    document.getElementById("preview");
+
+  const idbox =
+    document.getElementById("idbox");
+
+  const imageLink =
+    document.getElementById("imageLink");
+
+  result.style.display = "none";
+
   if(!/^\d{9}$/.test(id)){
 
-    showError(
-      "❌ ID vật phẩm phải đúng 9 chữ số."
-    );
+    status.className = "status error";
+
+    status.textContent =
+      "❌ ID phải gồm đúng 9 chữ số.";
 
     return;
   }
 
-  document
-    .getElementById("loading")
-    .style.display =
-      "block";
+  status.className = "status";
 
-  try{
+  status.textContent =
+    "⏳ Đang kiểm tra vật phẩm...";
 
-    const response =
-      await fetch(
-        `/api/item?id=${id}`
-      );
+  const api =
+    `${BASE_URL}/api/item?id=${id}`;
 
-    const data =
-      await response.json();
+  fetch(api)
 
-    if(!response.ok ||
-       !data.success){
+    .then(res => res.json())
 
-      showError(
-        data.message ||
-        "Không tìm thấy vật phẩm."
-      );
+    .then(data => {
 
-      return;
-    }
+      if(!data.success){
 
-    currentImage =
-      data.item.image;
+        status.className =
+          "status error";
 
-    document
-      .getElementById("image")
-      .src =
-        data.item.image;
+        status.textContent =
+          "❌ Không tìm thấy ảnh cho ID này.";
 
-    document
-      .getElementById("itemId")
-      .textContent =
-        data.item.id;
+        return;
+      }
 
-    document
-      .getElementById("itemName")
-      .textContent =
-        data.item.name;
+      preview.src = data.image;
 
-    document
-      .getElementById("itemType")
-      .textContent =
-        data.item.type;
+      preview.onload = () => {
 
-    document
-      .getElementById("imageUrl")
-      .textContent =
-        data.item.image;
+        result.style.display = "block";
 
-    document
-      .getElementById("result")
-      .style.display =
-        "block";
+        status.className =
+          "status success";
 
-    history.replaceState(
-      null,
-      "",
-      `/id=${id}`
-    );
+        status.textContent =
+          "✅ Đã tìm thấy vật phẩm.";
 
-  }catch(error){
+        idbox.textContent =
+          `ITEM ID: ${id}`;
 
-    showError(
-      "❌ Không thể kết nối API."
-    );
+        imageLink.href =
+          data.image;
 
-  }finally{
+        imageLink.textContent =
+          data.image;
+      };
 
-    document
-      .getElementById("loading")
-      .style.display =
-        "none";
-  }
+      preview.onerror = () => {
 
-}
+        status.className =
+          "status error";
 
-function copyImage(){
+        status.textContent =
+          "❌ Không thể tải ảnh.";
 
-  if(!currentImage) return;
+      };
 
-  navigator.clipboard
-    .writeText(
-      location.origin +
-      currentImage
-    )
-    .then(() => {
+    })
 
-      alert(
-        "✅ Đã sao chép URL ảnh!"
-      );
+    .catch(error => {
+
+      console.error(error);
+
+      status.className =
+        "status error";
+
+      status.textContent =
+        "❌ API đang lỗi hoặc chưa được cấu hình.";
 
     });
-
 }
 
-function openImage(){
+document
+  .getElementById("itemId")
+  .addEventListener("input", function(){
 
-  if(!currentImage) return;
+    this.value =
+      this.value.replace(/\D/g,"");
 
-  window.open(
-    currentImage,
-    "_blank"
-  );
+    if(this.value.length === 9){
+      findItem();
+    }
 
-}
-
-// ===============================
-// TỰ NHẬN ID TỪ /id=123456789
-// ===============================
-
-const path =
-  location.pathname;
-
-if(path.startsWith("/id=")){
-
-  const id =
-    path
-      .substring(4)
-      .replace(/\D/g,"")
-      .slice(0,9);
-
-  if(/^\d{9}$/.test(id)){
-
-    input.value = id;
-
-    setTimeout(
-      searchItem,
-      150
-    );
-
-  }
-
-}
+  });
 
 </script>
 
 </body>
-
 </html>
