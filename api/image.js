@@ -16,10 +16,10 @@ export default async function handler(req, res) {
      * API cố gắng lấy ảnh theo ID từ thư viện.
      */
     const sources = [
-      `https://ff-item.netlify.app/Items/${id}.png`,
-      `https://ff-item.netlify.app/items/${id}.png`,
-      `https://ff-item.netlify.app/assets/${id}.png`,
-      `https://ff-item.netlify.app/images/${id}.png`
+      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
+      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
+      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`,
+      `https://cdn.jsdelivr.net/gh/ShahGCreator/icon@main/PNG/{ID}.png`
     ];
 
     for (const source of sources) {
