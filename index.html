@@ -1,71 +1,97 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta
   name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+  content="width=device-width,initial-scale=1"
 >
 
-<title>FFVNTGM ITEM FREE FIRE 🔥</title>
+<title>
+FFVNTGM ITEM FREE FIRE 🔥
+</title>
 
 <style>
+
 *{
   box-sizing:border-box;
-  margin:0;
-  padding:0;
 }
 
 body{
+  margin:0;
   min-height:100vh;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
   font-family:Arial,sans-serif;
   color:#fff;
+
   background:
-    radial-gradient(circle at top,#3b1d00 0%,#090909 40%,#020202 100%);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:20px;
+    radial-gradient(
+      circle at top,
+      #472300,
+      #0b0b0b 42%,
+      #020202
+    );
 }
 
 .container{
   width:100%;
-  max-width:520px;
+  max-width:550px;
+
   padding:28px;
-  border:1px solid rgba(255,140,0,.35);
-  border-radius:24px;
-  background:rgba(20,20,20,.78);
-  backdrop-filter:blur(18px);
+
+  border-radius:25px;
+
+  background:
+    rgba(20,20,20,.82);
+
+  border:
+    1px solid
+    rgba(255,130,0,.3);
+
+  backdrop-filter:
+    blur(20px);
+
   box-shadow:
-    0 20px 70px rgba(0,0,0,.65),
-    0 0 35px rgba(255,120,0,.12);
+    0 25px 80px #000,
+    0 0 35px
+    rgba(255,110,0,.1);
 }
 
 .logo{
   width:85px;
   height:85px;
-  object-fit:cover;
-  border-radius:22px;
+
   display:block;
   margin:0 auto 15px;
-  box-shadow:0 0 30px rgba(255,120,0,.35);
+
+  object-fit:cover;
+
+  border-radius:22px;
+
+  box-shadow:
+    0 0 35px
+    rgba(255,130,0,.3);
 }
 
 h1{
   text-align:center;
   font-size:25px;
-  margin-bottom:8px;
 }
 
 .subtitle{
   text-align:center;
-  color:#aaa;
-  font-size:14px;
+  color:#999;
   margin-bottom:25px;
 }
 
-.input-box{
+.search{
   display:flex;
   gap:10px;
 }
@@ -73,77 +99,103 @@ h1{
 input{
   flex:1;
   min-width:0;
-  height:52px;
+
+  height:53px;
+
   padding:0 16px;
+
   border-radius:14px;
+
   border:1px solid #444;
+
   outline:none;
-  background:#111;
+
+  background:#0d0d0d;
+
   color:#fff;
+
   font-size:16px;
 }
 
 input:focus{
   border-color:#ff8500;
-  box-shadow:0 0 15px rgba(255,133,0,.2);
 }
 
 button{
-  height:52px;
-  padding:0 18px;
-  border:0;
-  border-radius:14px;
-  background:linear-gradient(135deg,#ffb000,#ff5e00);
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-  font-size:14px;
-}
+  height:53px;
 
-button:active{
-  transform:scale(.97);
+  padding:0 18px;
+
+  border:0;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffb000,
+      #ff5800
+    );
+
+  color:#fff;
+
+  font-weight:bold;
+
+  cursor:pointer;
 }
 
 .result{
   display:none;
+
   margin-top:25px;
-  padding:18px;
+
+  padding:20px;
+
   border-radius:18px;
-  background:rgba(255,255,255,.045);
-  border:1px solid rgba(255,255,255,.08);
+
+  background:#0c0c0c;
+
+  border:1px solid #292929;
 }
 
 .item-image{
-  width:220px;
-  height:220px;
-  object-fit:contain;
+  width:250px;
+  height:250px;
+
   display:block;
-  margin:0 auto 18px;
+
+  margin:0 auto 20px;
+
+  object-fit:contain;
+
   border-radius:18px;
-  background:#080808;
+
+  background:#050505;
 }
 
-.info{
-  line-height:1.8;
+.row{
+  padding:8px 0;
+
   font-size:14px;
-  word-break:break-all;
+
+  word-break:break-word;
 }
 
 .label{
-  color:#999;
+  color:#888;
 }
 
 .value{
   color:#ffae32;
 }
 
-.actions{
+.buttons{
   display:flex;
   gap:10px;
   margin-top:15px;
 }
 
-.actions button{
+.buttons button{
   flex:1;
 }
 
@@ -154,29 +206,49 @@ button:active{
 
 .error{
   display:none;
-  margin-top:18px;
-  padding:14px;
-  border-radius:13px;
-  background:rgba(255,40,40,.1);
-  border:1px solid rgba(255,60,60,.3);
+
+  margin-top:15px;
+
+  padding:13px;
+
+  border-radius:12px;
+
+  background:#260b0b;
+
   color:#ff8b8b;
-  font-size:14px;
 }
 
-.api-link{
-  margin-top:20px;
+.loading{
+  display:none;
+
   text-align:center;
-  color:#777;
-  font-size:12px;
-  word-break:break-all;
+
+  margin-top:20px;
+
+  color:#ff9d22;
 }
 
-@media(max-width:480px){
+.admin{
+  display:block;
+
+  margin-top:22px;
+
+  text-align:center;
+
+  color:#666;
+
+  text-decoration:none;
+
+  font-size:12px;
+}
+
+@media(max-width:500px){
+
   .container{
     padding:20px;
   }
 
-  .input-box{
+  .search{
     flex-direction:column;
   }
 
@@ -184,174 +256,263 @@ button:active{
     width:100%;
   }
 
-  .actions{
+  .buttons{
     flex-direction:column;
   }
+
 }
+
 </style>
+
 </head>
 
 <body>
 
 <div class="container">
 
-  <img
-    class="logo"
-    src="https://cdn.imagetourls.com/uploads/tyImg/1ggIdgxtr.jpg"
-    alt="FFVNTGM"
-  >
+<img
+  class="logo"
+  src="https://cdn.imagetourls.com/uploads/tyImg/1ggIdgxtr.jpg"
+  alt="FFVNTGM"
+>
 
-  <h1>FREE FIRE ITEM 🔥</h1>
+<h1>
+FREE FIRE ITEM 🔥
+</h1>
 
-  <div class="subtitle">
-    NHẬN DẠNG ID VẬT PHẨM
-  </div>
+<div class="subtitle">
+NHẬN DẠNG ID VẬT PHẨM
+</div>
 
-  <div class="input-box">
+<div class="search">
 
-    <input
-      id="itemId"
-      type="text"
-      inputmode="numeric"
-      maxlength="9"
-      placeholder="Nhập ID 9 chữ số..."
-      autocomplete="off"
-    >
+<input
+  id="id"
+  type="text"
+  inputmode="numeric"
+  maxlength="9"
+  placeholder="Nhập ID 9 chữ số..."
+>
 
-    <button onclick="detectItem()">
-      🔍 NHẬN DẠNG
-    </button>
+<button onclick="searchItem()">
+🔍 NHẬN DẠNG
+</button>
 
-  </div>
+</div>
 
-  <div id="error" class="error"></div>
+<div id="loading" class="loading">
+⏳ ĐANG NHẬN DẠNG...
+</div>
 
-  <div id="result" class="result">
+<div id="error" class="error"></div>
 
-    <img
-      id="itemImage"
-      class="item-image"
-      alt="Free Fire Item"
-    >
+<div id="result" class="result">
 
-    <div class="info">
+<img
+  id="image"
+  class="item-image"
+  alt="Free Fire Item"
+>
 
-      <div>
-        <span class="label">ID vật phẩm:</span>
-        <span id="showId" class="value"></span>
-      </div>
+<div class="row">
+<span class="label">
+ID:
+</span>
 
-      <div>
-        <span class="label">Trạng thái:</span>
-        <span id="status" class="value"></span>
-      </div>
+<span
+  id="itemId"
+  class="value"
+></span>
+</div>
 
-      <div>
-        <span class="label">URL ảnh:</span>
-        <span id="showUrl" class="value"></span>
-      </div>
+<div class="row">
+<span class="label">
+Tên:
+</span>
 
-    </div>
+<span
+  id="itemName"
+  class="value"
+></span>
+</div>
 
-    <div class="actions">
+<div class="row">
+<span class="label">
+Loại:
+</span>
 
-      <button onclick="copyImageUrl()">
-        📋 SAO CHÉP URL
-      </button>
+<span
+  id="itemType"
+  class="value"
+></span>
+</div>
 
-      <button
-        class="secondary"
-        onclick="openImage()"
-      >
-        🖼️ MỞ ẢNH
-      </button>
+<div class="row">
+<span class="label">
+URL ảnh:
+</span>
 
-    </div>
+<span
+  id="imageUrl"
+  class="value"
+></span>
+</div>
 
-  </div>
+<div class="buttons">
 
-  <div id="apiLink" class="api-link"></div>
+<button onclick="copyImage()">
+📋 SAO CHÉP URL ẢNH
+</button>
+
+<button
+  class="secondary"
+  onclick="openImage()"
+>
+🖼️ MỞ ẢNH
+</button>
+
+</div>
+
+</div>
+
+<a
+  class="admin"
+  href="/api/admin"
+>
+ADMIN
+</a>
 
 </div>
 
 <script>
 
-let currentImageUrl = "";
+let currentImage = "";
 
-const input = document.getElementById("itemId");
+const input =
+  document.getElementById("id");
 
-input.addEventListener("input", () => {
+input.addEventListener(
+  "input",
+  () => {
 
-  input.value = input.value
-    .replace(/\D/g, "")
-    .slice(0, 9);
+    input.value =
+      input.value
+        .replace(/\D/g,"")
+        .slice(0,9);
 
-});
-
-input.addEventListener("keydown", e => {
-
-  if(e.key === "Enter"){
-    detectItem();
   }
+);
 
-});
+input.addEventListener(
+  "keydown",
+  event => {
 
-async function detectItem(){
+    if(event.key === "Enter"){
+      searchItem();
+    }
 
-  const id = input.value.trim();
+  }
+);
+
+function showError(message){
+
+  const error =
+    document.getElementById("error");
+
+  error.textContent =
+    message;
+
+  error.style.display =
+    "block";
+}
+
+function hideError(){
+
+  document
+    .getElementById("error")
+    .style.display =
+      "none";
+}
+
+async function searchItem(){
 
   hideError();
 
-  document.getElementById("result").style.display = "none";
+  document
+    .getElementById("result")
+    .style.display =
+      "none";
+
+  const id =
+    input.value.trim();
 
   if(!/^\d{9}$/.test(id)){
 
     showError(
-      "❌ ID vật phẩm phải gồm đúng 9 chữ số."
+      "❌ ID vật phẩm phải đúng 9 chữ số."
     );
 
     return;
   }
 
+  document
+    .getElementById("loading")
+    .style.display =
+      "block";
+
   try{
 
-    const response = await fetch(
-      `/api/item?id=${encodeURIComponent(id)}`
-    );
+    const response =
+      await fetch(
+        `/api/item?id=${id}`
+      );
 
-    const data = await response.json();
+    const data =
+      await response.json();
 
-    if(!response.ok || !data.success){
+    if(!response.ok ||
+       !data.success){
 
       showError(
         data.message ||
-        "Không thể nhận dạng ID vật phẩm."
+        "Không tìm thấy vật phẩm."
       );
 
       return;
     }
 
-    currentImageUrl = data.image.url;
+    currentImage =
+      data.item.image;
 
-    document.getElementById("itemImage").src =
-      currentImageUrl;
+    document
+      .getElementById("image")
+      .src =
+        data.item.image;
 
-    document.getElementById("showId").textContent =
-      data.item.id;
+    document
+      .getElementById("itemId")
+      .textContent =
+        data.item.id;
 
-    document.getElementById("showUrl").textContent =
-      currentImageUrl;
+    document
+      .getElementById("itemName")
+      .textContent =
+        data.item.name;
 
-    document.getElementById("status").textContent =
-      data.image.available
-        ? "Đã tìm thấy ảnh"
-        : "Chưa xác minh được ảnh";
+    document
+      .getElementById("itemType")
+      .textContent =
+        data.item.type;
 
-    document.getElementById("apiLink").textContent =
-      `${location.origin}/api/item?id=${id}`;
+    document
+      .getElementById("imageUrl")
+      .textContent =
+        data.item.image;
 
-    document.getElementById("result").style.display =
-      "block";
+    document
+      .getElementById("result")
+      .style.display =
+        "block";
 
     history.replaceState(
       null,
@@ -365,72 +526,69 @@ async function detectItem(){
       "❌ Không thể kết nối API."
     );
 
+  }finally{
+
+    document
+      .getElementById("loading")
+      .style.display =
+        "none";
   }
 
 }
 
-function showError(message){
+function copyImage(){
 
-  const error =
-    document.getElementById("error");
+  if(!currentImage) return;
 
-  error.textContent = message;
-  error.style.display = "block";
+  navigator.clipboard
+    .writeText(
+      location.origin +
+      currentImage
+    )
+    .then(() => {
 
-}
+      alert(
+        "✅ Đã sao chép URL ảnh!"
+      );
 
-function hideError(){
-
-  document.getElementById("error")
-    .style.display = "none";
-
-}
-
-function copyImageUrl(){
-
-  if(!currentImageUrl) return;
-
-  navigator.clipboard.writeText(
-    currentImageUrl
-  ).then(() => {
-
-    alert("✅ Đã sao chép URL ảnh!");
-
-  });
+    });
 
 }
 
 function openImage(){
 
-  if(!currentImageUrl) return;
+  if(!currentImage) return;
 
   window.open(
-    currentImageUrl,
+    currentImage,
     "_blank"
   );
 
 }
 
-// ======================================
-// TỰ ĐỘNG NHẬN ID TỪ /id=123456789
-// ======================================
+// ===============================
+// TỰ NHẬN ID TỪ /id=123456789
+// ===============================
 
-const path = location.pathname;
+const path =
+  location.pathname;
 
 if(path.startsWith("/id=")){
 
-  const idFromUrl =
-    path.substring(4)
-      .replace(/\D/g, "")
+  const id =
+    path
+      .substring(4)
+      .replace(/\D/g,"")
       .slice(0,9);
 
-  if(idFromUrl.length === 9){
+  if(/^\d{9}$/.test(id)){
 
-    input.value = idFromUrl;
+    input.value = id;
 
-    setTimeout(() => {
-      detectItem();
-    }, 100);
+    setTimeout(
+      searchItem,
+      150
+    );
 
   }
 
@@ -439,4 +597,5 @@ if(path.startsWith("/id=")){
 </script>
 
 </body>
-          </html>
+
+</html>
