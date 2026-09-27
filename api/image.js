@@ -4,74 +4,76 @@ const IMAGE_SOURCES = [
   "https://cdn.jsdelivr.net/gh/XD-jeef/FF-icon@main/PNG/{id}.png"
 ];
 
-async function checkImage(url) {
-  try {
-    const response = await fetch(url, {
-      method: "HEAD",
-      redirect: "follow",
-      headers: {
-        "User-Agent": "FFVNTGM-Item-API/1.0"
-      }
-    });
-
-    if (!response.ok) return false;
-
-    const type =
-      response.headers.get("content-type") || "";
-
-    return type.toLowerCase().startsWith("image/");
-  } catch {
-    return false;
-  }
-}
-
 export default async function handler(req, res) {
   const id = String(req.query?.id || "").trim();
 
+  // Chỉ nhận đúng 9 số
   if (!/^\d{9}$/.test(id)) {
     return res.status(400).json({
       success: false,
       error: "INVALID_ID",
-      message: "Item ID phải gồm đúng 9 chữ số."
+      message: "ID vật phẩm phải gồm đúng 9 chữ số."
     });
   }
 
-  try {
-    for (const template of IMAGE_SOURCES) {
-      const imageUrl =
-        template.replace("{id}", id);
+  for (const template of IMAGE_SOURCES) {
+    const sourceUrl = template.replace("{id}", id);
 
-      const exists =
-        await checkImage(imageUrl);
+    try {
+      const response = await fetch(sourceUrl, {
+        headers: {
+          "User-Agent": "FFVNTGM-Item-API"
+        }
+      });
 
-      if (exists) {
-        res.setHeader(
-          "Cache-Control",
-          "public, max-age=86400, s-maxage=86400"
-        );
-
-        return res.redirect(302, imageUrl);
+      if (!response.ok) {
+        continue;
       }
+
+      const contentType =
+        response.headers.get("content-type") || "";
+
+      if (!contentType.startsWith("image/")) {
+        continue;
+      }
+
+      const buffer = Buffer.from(
+        await response.arrayBuffer()
+      );
+
+      // QUAN TRỌNG:
+      // Trả ảnh trực tiếp từ server của bạn,
+      // KHÔNG redirect sang CDN.
+      res.setHeader(
+        "Content-Type",
+        contentType
+      );
+
+      res.setHeader(
+        "Cache-Control",
+        "public, max-age=31536000, immutable"
+      );
+
+      res.setHeader(
+        "Content-Length",
+        buffer.length
+      );
+
+      return res.status(200).send(buffer);
+
+    } catch (error) {
+      console.error(
+        "Source error:",
+        sourceUrl,
+        error.message
+      );
     }
-
-    return res.status(404).json({
-      success: false,
-      error: "IMAGE_NOT_FOUND",
-      id,
-      message:
-        "Không tìm thấy icon cho Item ID này trong các nguồn ảnh."
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      error: "API_ERROR",
-      message:
-        "Không thể xử lý yêu cầu.",
-      detail:
-        error?.message || "Unknown error"
-    });
   }
+
+  return res.status(404).json({
+    success: false,
+    error: "IMAGE_NOT_FOUND",
+    id,
+    message: "Không tìm thấy ảnh cho Item ID này."
+  });
 }
