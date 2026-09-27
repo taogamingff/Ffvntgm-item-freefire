@@ -1,9 +1,6 @@
-import { list } from "@vercel/blob";
-
 export default async function handler(req, res) {
   try {
     const id = String(req.query?.id || "").trim();
-    const ext = String(req.query?.ext || "png").toLowerCase();
 
     if (!/^\d{9}$/.test(id)) {
       return res.status(400).json({
@@ -12,73 +9,184 @@ export default async function handler(req, res) {
       });
     }
 
-    const allowed = ["png", "jpg", "jpeg", "webp"];
+    /*
+      Nguồn dữ liệu Free Fire Item Database.
+      Dữ liệu công khai có item ID và mapping CDN/icon.
+    */
 
-    if (!allowed.includes(ext)) {
-      return res.status(400).json({
+    const dataUrls = [
+      "https://raw.githubusercontent.com/jinix6/ItemID/main/assets/itemData.json",
+      "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json"
+    ];
+
+    let itemData = null;
+
+    for (const url of dataUrls) {
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) continue;
+
+        const json = await response.json();
+
+        if (json) {
+          itemData = json;
+          break;
+        }
+      } catch (_) {}
+    }
+
+    if (!itemData) {
+      return res.status(503).json({
         success: false,
-        error: "Định dạng ảnh không được hỗ trợ"
+        error: "Không tải được dữ liệu Free Fire Item"
       });
     }
 
-    const result = await list({
-      prefix: `items/${id}.`,
-      limit: 20
-    });
+    /*
+      Tìm ID trong nhiều dạng JSON khác nhau.
+    */
 
-    const file = result.blobs?.find(blob => {
-      const name = blob.pathname.toLowerCase();
-      return (
-        name === `items/${id}.${ext}` ||
-        name === `items/${id}.png` ||
-        name === `items/${id}.jpg` ||
-        name === `items/${id}.jpeg` ||
-        name === `items/${id}.webp`
+    let item = null;
+
+    if (Array.isArray(itemData)) {
+
+      item = itemData.find(x =>
+        String(
+          x.itemID ??
+          x.itemId ??
+          x.id ??
+          x.ID ??
+          ""
+        ) === id
       );
+
+    } else if (typeof itemData === "object") {
+
+      if (itemData[id]) {
+        item = itemData[id];
+      }
+
+      if (!item) {
+        for (const value of Object.values(itemData)) {
+
+          if (!value || typeof value !== "object") continue;
+
+          const currentId = String(
+            value.itemID ??
+            value.itemId ??
+            value.id ??
+            value.ID ??
+            ""
+          );
+
+          if (currentId === id) {
+            item = value;
+            break;
+          }
+        }
+      }
+    }
+
+    /*
+      Nếu tìm được URL ảnh trực tiếp trong dữ liệu
+      thì trả ảnh đó.
+    */
+
+    if (item) {
+
+      const possibleImages = [
+        item.icon,
+        item.iconUrl,
+        item.iconURL,
+        item.image,
+        item.imageUrl,
+        item.imageURL,
+        item.cdn,
+        item.url,
+        item.iconName
+      ];
+
+      let imageUrl = possibleImages.find(
+        x =>
+          typeof x === "string" &&
+          /^https?:\/\//i.test(x)
+      );
+
+      /*
+        Nếu dữ liệu chỉ có tên icon,
+        thử CDN của ff-resources.
+      */
+
+      if (!imageUrl) {
+
+        const iconName =
+          item.iconName ||
+          item.icon ||
+          item.image;
+
+        if (
+          typeof iconName === "string" &&
+          iconName.length > 0 &&
+          !iconName.startsWith("http")
+        ) {
+
+          imageUrl =
+            `https://raw.githubusercontent.com/0xMe/ff-resources/main/assets/${iconName}.png`;
+        }
+      }
+
+      if (imageUrl) {
+
+        const imageResponse =
+          await fetch(imageUrl);
+
+        if (imageResponse.ok) {
+
+          const contentType =
+            imageResponse.headers.get(
+              "content-type"
+            ) || "image/png";
+
+          const buffer =
+            Buffer.from(
+              await imageResponse.arrayBuffer()
+            );
+
+          res.setHeader(
+            "Content-Type",
+            contentType
+          );
+
+          res.setHeader(
+            "Cache-Control",
+            "public, max-age=86400"
+          );
+
+          return res.status(200).send(buffer);
+        }
+      }
+    }
+
+    /*
+      Không tìm thấy ID.
+    */
+
+    return res.status(404).json({
+      success: false,
+      found: false,
+      id,
+      error: "Không tìm thấy ảnh cho Item ID này"
     });
-
-    if (!file) {
-      return res.status(404).json({
-        success: false,
-        error: "Không tìm thấy ảnh vật phẩm",
-        id,
-        image: null
-      });
-    }
-
-    const response = await fetch(file.url);
-
-    if (!response.ok) {
-      return res.status(502).json({
-        success: false,
-        error: "Không thể tải ảnh từ Blob"
-      });
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-
-    const contentType =
-      file.pathname.endsWith(".png")
-        ? "image/png"
-        : file.pathname.endsWith(".webp")
-        ? "image/webp"
-        : "image/jpeg";
-
-    res.setHeader("Content-Type", contentType);
-    res.setHeader(
-      "Cache-Control",
-      "public, max-age=31536000, immutable"
-    );
-
-    return res.status(200).send(buffer);
 
   } catch (error) {
+
     console.error(error);
 
     return res.status(500).json({
       success: false,
-      error: "Lỗi máy chủ",
-      message: error?.message || "Unknown error"
+      error: "API Error",
+      message: error.message
     });
   }
-}
+            }
