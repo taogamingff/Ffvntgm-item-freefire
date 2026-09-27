@@ -1,104 +1,63 @@
 import { list } from "@vercel/blob";
 
-function getId(value) {
-  if (!value) return "";
-
-  let id = String(value).trim();
-
-  if (id.startsWith("id=")) {
-    id = id.substring(3);
-  }
-
-  return id.replace(/\D/g, "");
-}
-
 export default async function handler(req, res) {
   try {
-    const id = getId(
+    const id = String(
       req.query?.id ||
+      req.query?.item ||
       req.query?.item_id ||
-      req.query?.itemId
-    );
+      ""
+    ).trim();
 
     if (!/^\d{9}$/.test(id)) {
       return res.status(400).json({
         success: false,
-        error: "INVALID_ITEM_ID",
-        message: "ID vật phẩm phải gồm đúng 9 chữ số.",
+        error: "ID Free Fire phải gồm đúng 9 chữ số",
         example: "/id=902052005"
       });
     }
 
     const result = await list({
-      prefix: "database/items.json",
-      limit: 1
+      prefix: `items/${id}.`,
+      limit: 20
     });
 
-    let database = {};
+    const file = result.blobs?.find(blob =>
+      /^items\/\d{9}\.(png|jpg|jpeg|webp)$/i.test(blob.pathname)
+    );
 
-    if (result.blobs.length > 0) {
-      const databaseUrl = result.blobs[0].url;
-
-      const response = await fetch(databaseUrl);
-
-      if (response.ok) {
-        database = await response.json();
-      }
-    }
-
-    const item = database[id];
-
-    if (!item) {
+    if (!file) {
       return res.status(404).json({
         success: false,
-        error: "ITEM_NOT_FOUND",
-        message: "ID vật phẩm chưa có trong kho dữ liệu FFVNTGM.",
-        item_id: id,
-        add_url: "/admin"
+        id,
+        found: false,
+        message: "Chưa có ảnh cho ID vật phẩm này.",
+        image: null
       });
     }
 
+    const ext =
+      file.pathname.split(".").pop()?.toLowerCase() || "png";
+
     const imageUrl =
-      `${getBaseUrl(req)}/images/${id}`;
+      `https://ffvntgm-item-freefire.vercel.app/images/${id}.${ext}`;
 
     return res.status(200).json({
       success: true,
-
-      item: {
-        id,
-        name: item.name || `Free Fire Item ${id}`,
-        type: item.type || "FREE_FIRE_ITEM",
-        image: imageUrl
-      },
-
-      urls: {
-        item: `${getBaseUrl(req)}/id=${id}`,
-        api: `${getBaseUrl(req)}/api/item?id=${id}`,
-        image: imageUrl
-      },
-
-      updated_at: item.updated_at || null
+      found: true,
+      id,
+      image: imageUrl,
+      filename: file.pathname.split("/").pop(),
+      source: "FFVNTGM Item Database"
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("ITEM ERROR:", error);
 
     return res.status(500).json({
       success: false,
-      error: "SERVER_ERROR",
-      message: "Không thể đọc dữ liệu vật phẩm."
+      error: "Không thể đọc dữ liệu vật phẩm",
+      message: error?.message || "Unknown error"
     });
   }
-}
-
-function getBaseUrl(req) {
-  const host =
-    req.headers["x-forwarded-host"] ||
-    req.headers.host;
-
-  const protocol =
-    req.headers["x-forwarded-proto"] ||
-    "https";
-
-  return `${protocol}://${host}`;
 }
