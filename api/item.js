@@ -1,100 +1,104 @@
+import { list } from "@vercel/blob";
+
+function getId(value) {
+  if (!value) return "";
+
+  let id = String(value).trim();
+
+  if (id.startsWith("id=")) {
+    id = id.substring(3);
+  }
+
+  return id.replace(/\D/g, "");
+}
+
 export default async function handler(req, res) {
   try {
-    // ==============================
-    // LẤY ID TỪ NHIỀU KIỂU URL
-    // ==============================
-
-    let rawId =
+    const id = getId(
       req.query?.id ||
       req.query?.item_id ||
-      req.query?.itemId ||
-      "";
-
-    rawId = String(rawId).trim();
-
-    // Hỗ trợ trường hợp URL bị truyền nguyên dạng:
-    // /id=123456789
-    if (rawId.startsWith("id=")) {
-      rawId = rawId.substring(3);
-    }
-
-    // Chỉ lấy chữ số
-    const id = rawId.replace(/\D/g, "");
-
-    // ==============================
-    // KIỂM TRA ID 9 SỐ
-    // ==============================
+      req.query?.itemId
+    );
 
     if (!/^\d{9}$/.test(id)) {
       return res.status(400).json({
         success: false,
         error: "INVALID_ITEM_ID",
-        message: "ID vật phẩm Free Fire phải gồm đúng 9 chữ số.",
-        received: rawId,
-        example: "/id=123456789"
+        message: "ID vật phẩm phải gồm đúng 9 chữ số.",
+        example: "/id=902052005"
       });
     }
 
-    // ==============================
-    // URL ẢNH
-    // ==============================
+    const result = await list({
+      prefix: "database/items.json",
+      limit: 1
+    });
+
+    let database = {};
+
+    if (result.blobs.length > 0) {
+      const databaseUrl = result.blobs[0].url;
+
+      const response = await fetch(databaseUrl);
+
+      if (response.ok) {
+        database = await response.json();
+      }
+    }
+
+    const item = database[id];
+
+    if (!item) {
+      return res.status(404).json({
+        success: false,
+        error: "ITEM_NOT_FOUND",
+        message: "ID vật phẩm chưa có trong kho dữ liệu FFVNTGM.",
+        item_id: id,
+        add_url: "/admin"
+      });
+    }
 
     const imageUrl =
-      `https://iconapi.wasmer.app/${encodeURIComponent(id)}`;
-
-    // ==============================
-    // KIỂM TRA ẢNH
-    // ==============================
-
-    let imageAvailable = false;
-    let contentType = null;
-
-    try {
-      const response = await fetch(imageUrl, {
-        method: "HEAD"
-      });
-
-      imageAvailable = response.ok;
-
-      contentType =
-        response.headers.get("content-type") || null;
-    } catch (error) {
-      imageAvailable = false;
-    }
-
-    // ==============================
-    // TRẢ JSON
-    // ==============================
+      `${getBaseUrl(req)}/images/${id}`;
 
     return res.status(200).json({
       success: true,
 
       item: {
-        id: id,
-        type: "FREE_FIRE_ITEM"
-      },
-
-      image: {
-        url: imageUrl,
-        available: imageAvailable,
-        content_type: contentType
-      },
-
-      urls: {
-        api: `/api/item?id=${id}`,
-        item: `/id=${id}`,
+        id,
+        name: item.name || `Free Fire Item ${id}`,
+        type: item.type || "FREE_FIRE_ITEM",
         image: imageUrl
       },
 
-      html: `<img src="${imageUrl}" alt="Free Fire Item ${id}" />`
+      urls: {
+        item: `${getBaseUrl(req)}/id=${id}`,
+        api: `${getBaseUrl(req)}/api/item?id=${id}`,
+        image: imageUrl
+      },
+
+      updated_at: item.updated_at || null
     });
 
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
       success: false,
       error: "SERVER_ERROR",
-      message: "Không thể xử lý ID vật phẩm.",
-      details: error.message
+      message: "Không thể đọc dữ liệu vật phẩm."
     });
   }
-        }
+}
+
+function getBaseUrl(req) {
+  const host =
+    req.headers["x-forwarded-host"] ||
+    req.headers.host;
+
+  const protocol =
+    req.headers["x-forwarded-proto"] ||
+    "https";
+
+  return `${protocol}://${host}`;
+      }
