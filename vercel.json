@@ -5,18 +5,6 @@
       "destination": "/api/image?id=:id"
     },
     {
-      "source": "/images/:id.jpg",
-      "destination": "/api/image?id=:id"
-    },
-    {
-      "source": "/images/:id.jpeg",
-      "destination": "/api/image?id=:id"
-    },
-    {
-      "source": "/images/:id.webp",
-      "destination": "/api/image?id=:id"
-    },
-    {
       "source": "/images/:id",
       "destination": "/api/image?id=:id"
     }
