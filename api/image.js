@@ -1,192 +1,349 @@
-export default async function handler(req, res) {
-  try {
-    const id = String(req.query?.id || "").trim();
+const SOURCES = [
+  {
+    data: "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json",
+    cdn: "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/cdn.json"
+  },
+  {
+    data: "https://raw.githubusercontent.com/jinix6/ItemID/main/assets/itemData.json",
+    cdn: "https://raw.githubusercontent.com/jinix6/ItemID/main/assets/cdn.json"
+  }
+];
 
-    if (!/^\d{9}$/.test(id)) {
-      return res.status(400).json({
-        success: false,
-        error: "ID phải gồm đúng 9 chữ số"
-      });
+const CACHE = new Map();
+
+async function getJSON(url) {
+  const r = await fetch(url, {
+    headers: {
+      "User-Agent": "FFVNTGM-Item-API/1.0"
     }
+  });
 
-    /*
-      Nguồn dữ liệu Free Fire Item Database.
-      Dữ liệu công khai có item ID và mapping CDN/icon.
-    */
+  if (!r.ok) {
+    throw new Error(`HTTP ${r.status}`);
+  }
 
-    const dataUrls = [
-      "https://raw.githubusercontent.com/jinix6/ItemID/main/assets/itemData.json",
-      "https://raw.githubusercontent.com/0xMe/ItemID2/main/assets/itemData.json"
-    ];
+  return await r.json();
+}
 
-    let itemData = null;
+function findItem(data, id) {
+  if (Array.isArray(data)) {
+    return data.find(item => {
+      if (!item || typeof item !== "object") return false;
 
-    for (const url of dataUrls) {
-      try {
-        const response = await fetch(url);
-
-        if (!response.ok) continue;
-
-        const json = await response.json();
-
-        if (json) {
-          itemData = json;
-          break;
-        }
-      } catch (_) {}
-    }
-
-    if (!itemData) {
-      return res.status(503).json({
-        success: false,
-        error: "Không tải được dữ liệu Free Fire Item"
-      });
-    }
-
-    /*
-      Tìm ID trong nhiều dạng JSON khác nhau.
-    */
-
-    let item = null;
-
-    if (Array.isArray(itemData)) {
-
-      item = itemData.find(x =>
-        String(
-          x.itemID ??
-          x.itemId ??
-          x.id ??
-          x.ID ??
-          ""
-        ) === id
-      );
-
-    } else if (typeof itemData === "object") {
-
-      if (itemData[id]) {
-        item = itemData[id];
-      }
-
-      if (!item) {
-        for (const value of Object.values(itemData)) {
-
-          if (!value || typeof value !== "object") continue;
-
-          const currentId = String(
-            value.itemID ??
-            value.itemId ??
-            value.id ??
-            value.ID ??
-            ""
-          );
-
-          if (currentId === id) {
-            item = value;
-            break;
-          }
-        }
-      }
-    }
-
-    /*
-      Nếu tìm được URL ảnh trực tiếp trong dữ liệu
-      thì trả ảnh đó.
-    */
-
-    if (item) {
-
-      const possibleImages = [
-        item.icon,
-        item.iconUrl,
-        item.iconURL,
-        item.image,
-        item.imageUrl,
-        item.imageURL,
-        item.cdn,
-        item.url,
-        item.iconName
-      ];
-
-      let imageUrl = possibleImages.find(
-        x =>
-          typeof x === "string" &&
-          /^https?:\/\//i.test(x)
-      );
-
-      /*
-        Nếu dữ liệu chỉ có tên icon,
-        thử CDN của ff-resources.
-      */
-
-      if (!imageUrl) {
-
-        const iconName =
-          item.iconName ||
-          item.icon ||
-          item.image;
-
-        if (
-          typeof iconName === "string" &&
-          iconName.length > 0 &&
-          !iconName.startsWith("http")
-        ) {
-
-          imageUrl =
-            `https://raw.githubusercontent.com/0xMe/ff-resources/main/assets/${iconName}.png`;
-        }
-      }
-
-      if (imageUrl) {
-
-        const imageResponse =
-          await fetch(imageUrl);
-
-        if (imageResponse.ok) {
-
-          const contentType =
-            imageResponse.headers.get(
-              "content-type"
-            ) || "image/png";
-
-          const buffer =
-            Buffer.from(
-              await imageResponse.arrayBuffer()
-            );
-
-          res.setHeader(
-            "Content-Type",
-            contentType
-          );
-
-          res.setHeader(
-            "Cache-Control",
-            "public, max-age=86400"
-          );
-
-          return res.status(200).send(buffer);
-        }
-      }
-    }
-
-    /*
-      Không tìm thấy ID.
-    */
-
-    return res.status(404).json({
-      success: false,
-      found: false,
-      id,
-      error: "Không tìm thấy ảnh cho Item ID này"
-    });
-
-  } catch (error) {
-
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      error: "API Error",
-      message: error.message
+      return String(
+        item.itemID ??
+        item.itemId ??
+        item.id ??
+        item.ID ??
+        item["2"] ??
+        ""
+      ) === id;
     });
   }
-            }
+
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  if (data[id]) {
+    return data[id];
+  }
+
+  for (const item of Object.values(data)) {
+    if (!item || typeof item !== "object") continue;
+
+    const itemId = String(
+      item.itemID ??
+      item.itemId ??
+      item.id ??
+      item.ID ??
+      item["2"] ??
+      ""
+    );
+
+    if (itemId === id) {
+      return item;
+    }
+  }
+
+  return null;
+}
+
+function getIconName(item) {
+  if (!item) return null;
+
+  return (
+    item.iconName ??
+    item.icon ??
+    item.IconName ??
+    item["1"] ??
+    null
+  );
+}
+
+function findCDN(cdn, iconName, id) {
+  if (!cdn) return null;
+
+  if (Array.isArray(cdn)) {
+    for (const item of cdn) {
+      if (!item || typeof item !== "object") continue;
+
+      const itemId = String(
+        item.itemID ??
+        item.itemId ??
+        item.id ??
+        item.ID ??
+        ""
+      );
+
+      const icon = String(
+        item.iconName ??
+        item.icon ??
+        item.name ??
+        ""
+      );
+
+      if (itemId === id || icon === iconName) {
+        return (
+          item.url ??
+          item.image ??
+          item.imageUrl ??
+          item.cdn ??
+          null
+        );
+      }
+    }
+  }
+
+  if (typeof cdn === "object") {
+    if (cdn[id]) {
+      return cdn[id];
+    }
+
+    if (iconName && cdn[iconName]) {
+      return cdn[iconName];
+    }
+
+    for (const [key, value] of Object.entries(cdn)) {
+      if (key === id || key === iconName) {
+        if (typeof value === "string") {
+          return value;
+        }
+
+        if (value && typeof value === "object") {
+          return (
+            value.url ??
+            value.image ??
+            value.imageUrl ??
+            value.cdn ??
+            null
+          );
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
+function buildImageCandidates(id, item, cdn) {
+  const candidates = [];
+
+  const direct = [
+    item?.image,
+    item?.imageUrl,
+    item?.imageURL,
+    item?.iconUrl,
+    item?.iconURL,
+    item?.url,
+    item?.cdn
+  ];
+
+  for (const url of direct) {
+    if (
+      typeof url === "string" &&
+      /^https?:\/\//i.test(url)
+    ) {
+      candidates.push(url);
+    }
+  }
+
+  const iconName = getIconName(item);
+
+  const cdnUrl = findCDN(
+    cdn,
+    iconName,
+    id
+  );
+
+  if (
+    typeof cdnUrl === "string" &&
+    /^https?:\/\//i.test(cdnUrl)
+  ) {
+    candidates.push(cdnUrl);
+  }
+
+  if (iconName) {
+    candidates.push(
+      `https://raw.githubusercontent.com/0xMe/ff-resources/main/assets/${iconName}.png`
+    );
+
+    candidates.push(
+      `https://raw.githubusercontent.com/0xMe/ff-resources/main/icons/${iconName}.png`
+    );
+  }
+
+  return [...new Set(candidates)];
+}
+
+async function getWorkingImage(candidates) {
+  for (const url of candidates) {
+    try {
+      const response = await fetch(url, {
+        method: "HEAD",
+        headers: {
+          "User-Agent": "FFVNTGM-Item-API/1.0"
+        }
+      });
+
+      if (
+        response.ok &&
+        (
+          response.headers.get("content-type") || ""
+        ).toLowerCase().startsWith("image/")
+      ) {
+        return url;
+      }
+    } catch (_) {}
+  }
+
+  return null;
+}
+
+export default async function handler(req, res) {
+  const id = String(
+    req.query?.id || ""
+  ).trim();
+
+  if (!/^\d{9}$/.test(id)) {
+    return res.status(400).json({
+      success: false,
+      error: "INVALID_ID",
+      message: "ID phải gồm đúng 9 chữ số.",
+      example:
+        "/images/902052005.png"
+    });
+  }
+
+  try {
+    if (CACHE.has(id)) {
+      const cached = CACHE.get(id);
+
+      if (cached.type === "image") {
+        return redirectToImage(
+          res,
+          cached.url
+        );
+      }
+    }
+
+    let foundItem = null;
+    let foundCDN = null;
+
+    for (const source of SOURCES) {
+      try {
+        const data =
+          await getJSON(source.data);
+
+        const item =
+          findItem(data, id);
+
+        if (item) {
+          foundItem = item;
+
+          try {
+            foundCDN =
+              await getJSON(source.cdn);
+          } catch (_) {
+            foundCDN = null;
+          }
+
+          break;
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+
+    if (!foundItem) {
+      return res.status(404).json({
+        success: false,
+        error: "ITEM_NOT_FOUND",
+        id,
+        message:
+          "ID chưa có trong dữ liệu Item Database."
+      });
+    }
+
+    const candidates =
+      buildImageCandidates(
+        id,
+        foundItem,
+        foundCDN
+      );
+
+    const image =
+      await getWorkingImage(candidates);
+
+    if (!image) {
+      return res.status(404).json({
+        success: false,
+        error: "IMAGE_NOT_FOUND",
+        id,
+        iconName:
+          getIconName(foundItem),
+        message:
+          "Đã tìm thấy Item ID nhưng chưa tìm được URL ảnh hoạt động."
+      });
+    }
+
+    CACHE.set(id, {
+      type: "image",
+      url: image
+    });
+
+    return redirectToImage(
+      res,
+      image
+    );
+
+  } catch (error) {
+    console.error(
+      "FFVNTGM ITEM ERROR:",
+      error
+    );
+
+    return res.status(503).json({
+      success: false,
+      error: "SOURCE_UNAVAILABLE",
+      message:
+        "Nguồn dữ liệu Item đang tạm thời không khả dụng.",
+      detail:
+        error?.message || "Unknown error"
+    });
+  }
+}
+
+function redirectToImage(res, url) {
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=86400, s-maxage=86400"
+  );
+
+  res.setHeader(
+    "Location",
+    url
+  );
+
+  return res.status(302).end();
+          }
